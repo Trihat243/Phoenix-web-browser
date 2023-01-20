@@ -30,7 +30,7 @@ public class PhoenixWeb extends JFrame implements HyperlinkListener {
   //Create instances for...
   private JButton buttonBack = new JButton("<-"), buttonForward = new JButton("->");//...the Back button
 
-  private JTextField locationTextField = new JTextField(35);//...the text field (35 chars)
+  private JTextField locationTextField = new JTextField(55);//...the text field (35 chars)
 
   private JEditorPane displayEditorPane = new JEditorPane();//...the display panel
 
@@ -39,7 +39,7 @@ public class PhoenixWeb extends JFrame implements HyperlinkListener {
   
 
   public PhoenixWeb() {
-    setSize(640, 480);//window size to 640px by 480px
+    setSize(1920, 1080);//window size to 1920 px by 1080px
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//what to do on close (default)
     JPanel bttnPanel = new JPanel();//Create a JPanel instance with refVar bttnPanel
 
@@ -78,7 +78,7 @@ public class PhoenixWeb extends JFrame implements HyperlinkListener {
 
     //Set Display Panel
     bttnPanel.add(bttnGo);
-    displayEditorPane.setContentType("text/html");
+    displayEditorPane.setContentType("text/html/css");
     displayEditorPane.setEditable(false);
     displayEditorPane.addHyperlinkListener(this);
 
@@ -118,86 +118,3 @@ public class PhoenixWeb extends JFrame implements HyperlinkListener {
       System.out.println("Invalid URL");
     }
   }
-
-
-  //verify the URL
-  private URL verifyUrl(String url) {
-    if (!url.toLowerCase().startsWith("http://"))
-      return null;
-
-    URL verifiedUrl = null;
-    try {
-      verifiedUrl = new URL(url);
-    } catch (Exception e) {
-      return null;
-    }
-
-    return verifiedUrl;
-  }
-
-  //Display the page
-  private void showPage(URL pageUrl, boolean addToList) {
-    try {
-      URL currentUrl = displayEditorPane.getPage();
-      displayEditorPane.setPage(pageUrl);
-      URL newUrl = displayEditorPane.getPage();
-      if (addToList) {
-        int listSize = pageList.size();
-        if (listSize <= 0) {
-          return;
-        }
-        int pageIndex = pageList.indexOf(currentUrl.toString());
-        if (pageIndex >= listSize - 1) {
-          return;
-        }
-        for (int i = listSize - 1; i > pageIndex; i--) {
-          pageList.remove(i);
-        }
-        pageList.add(newUrl.toString());
-      }
-      locationTextField.setText(newUrl.toString());
-      updateBttns();
-    } catch (Exception e) {
-      System.out.println("Unable to load page");
-    }
-  }//close showPage()
-
-
-
-
-  //Update the Buttons
-  private void updateBttns() {
-    if (pageList.size() < 2) {
-      buttonBack.setEnabled(false);
-      buttonForward.setEnabled(false);
-    } else {
-      URL currentUrl = displayEditorPane.getPage();
-      int pageIndex = pageList.indexOf(currentUrl.toString());
-      buttonBack.setEnabled(pageIndex > 0);
-      buttonForward.setEnabled(pageIndex < (pageList.size() - 1));
-    }
-  }
-
-  //Update the links
-  public void hyperlinkUpdate(HyperlinkEvent event) {
-    HyperlinkEvent.EventType eventType = event.getEventType();
-    if (eventType == HyperlinkEvent.EventType.ACTIVATED) {
-      if (event instanceof HTMLFrameHyperlinkEvent) {
-        HTMLFrameHyperlinkEvent linkEvent = (HTMLFrameHyperlinkEvent) event;
-        HTMLDocument document = (HTMLDocument) displayEditorPane.getDocument();
-        document.processHTMLFrameHyperlinkEvent(linkEvent);
-      } else {
-        showPage(event.getURL(), true);
-      }
-    }
-  }
-
-
-
-  /*MAIN METHOD*/
-  public static void main(String[] args) {
-    PhoenixWeb browser = new PhoenixWeb();
-    browser.setVisible(true);
-  }//main()
-
-}//Close Class-- PhoenixWeb
